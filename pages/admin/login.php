@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $error = $result;
 }
 
-render_header('Вход');
+render_header('Вход', array('noindex' => true, 'canonical' => 'admin/login'));
 ?>
 <div class="login-box">
     <h1>Вход в админку</h1>

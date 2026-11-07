@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#16332c"/>
+  <rect x="48" y="48" width="1104" height="534" fill="none" stroke="#b8893a" stroke-width="2"/>
+  <path d="M140 250c-28 14-64 18-88 18v140c24 0 60-4 88-18 28 14 64 18 88 18V268c-24 0-60-4-88-18z" fill="none" stroke="#b8893a" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M140 250v140" fill="none" stroke="#f7f8f5" stroke-width="8" stroke-linecap="round"/>
+  <text x="280" y="310" fill="#f7f8f5" font-family="Georgia, serif" font-size="52">  « 0728B85 »</text>
+  <text x="280" y="370" fill="#d7e4de" font-family="Arial, sans-serif" font-size="28">>2>AB8, 3@0=BK 8 4>:C<5=BK · 38=A:>5</text>
+</svg>

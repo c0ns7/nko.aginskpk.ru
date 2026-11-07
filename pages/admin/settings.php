@@ -10,6 +10,10 @@ $fields = array(
     'org_inn' => 'ИНН',
     'org_ogrn' => 'ОГРН',
     'org_kpp' => 'КПП',
+    'seo_title' => 'SEO-заголовок главной (title)',
+    'seo_description' => 'SEO-описание сайта (meta description)',
+    'yandex_verification' => 'Яндекс.Вебмастер (код подтверждения)',
+    'google_verification' => 'Google Search Console (код подтверждения)',
 );
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -30,7 +34,7 @@ render_admin_header('Реквизиты сайта');
     <?php foreach ($fields as $key => $label): ?>
         <label>
             <span><?php echo e($label); ?></span>
-            <?php if ($key === 'org_about' || $key === 'org_full' || $key === 'org_address'): ?>
+            <?php if ($key === 'org_about' || $key === 'org_full' || $key === 'org_address' || $key === 'seo_description'): ?>
                 <textarea name="<?php echo e($key); ?>"><?php echo e(setting($key)); ?></textarea>
             <?php else: ?>
                 <input type="text" name="<?php echo e($key); ?>" value="<?php echo e(setting($key)); ?>">

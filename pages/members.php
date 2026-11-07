@@ -1,10 +1,23 @@
 <?php
 $people = db()->query('SELECT * FROM members WHERE published = 1 ORDER BY sort_order ASC, id ASC')->fetchAll();
 $groups = member_types();
-render_header('Состав', array('description' => 'Кто входит в организацию и кто участвует в грантах.'));
+render_header('Состав РОО «Развитие АПК» — совет, члены, участники грантов', array(
+    'description' => 'Состав РОО «Развитие АПК»: органы управления, члены организации и участники грантовых проектов в Агинском.',
+    'canonical' => 'members',
+    'breadcrumbs' => array(
+        array('name' => 'Главная', 'url' => canonical('')),
+        array('name' => 'Состав', 'url' => canonical('members')),
+    ),
+    'schema' => array(
+        '@context' => 'https://schema.org',
+        '@type' => 'AboutPage',
+        'name' => 'Состав организации',
+        'url' => canonical('members'),
+    ),
+));
 ?>
 <div class="wrap page-head">
-    <h1>Состав</h1>
+    <h1>Состав организации</h1>
     <p class="lede">Органы управления, члены РОО и участники грантовых проектов. Состав можно уточнять в админке.</p>
 </div>
 <div class="wrap">

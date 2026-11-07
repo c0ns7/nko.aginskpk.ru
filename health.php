@@ -1,5 +1,6 @@
 <?php
 header('Content-Type: text/plain; charset=utf-8');
+header('X-Robots-Tag: noindex, nofollow');
 echo "PHP " . PHP_VERSION . "\n";
 echo "SAPI " . PHP_SAPI . "\n";
 echo "PDO drivers: " . (class_exists('PDO') ? implode(', ', PDO::getAvailableDrivers()) : 'нет PDO') . "\n";

@@ -292,6 +292,27 @@ a:hover { color: var(--moss); }
 .stamp-planned { color: var(--mute); }
 .stamp-participated { color: var(--forest-2); }
 
+.crumbs {
+  padding: 1rem 0 0;
+  font-size: 0.92rem;
+}
+.crumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  color: var(--mute);
+}
+.crumbs li:not(:last-child)::after {
+  content: "/";
+  margin-left: 0.5rem;
+  color: var(--line);
+}
+.crumbs a { color: var(--ink-soft); text-decoration: none; }
+.crumbs a:hover { color: var(--forest); }
+
 .page-head {
   padding: 2rem 0 1rem;
 }
