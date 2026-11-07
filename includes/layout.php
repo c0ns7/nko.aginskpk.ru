@@ -69,8 +69,8 @@ function render_header($title, $options = array())
     <link rel="apple-touch-icon" href="<?php echo e(asset('public/favicon.svg')); ?>?v=2">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,650&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?php echo e(asset('public/css/app.css')); ?>?v=4">
+    <link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,650&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<?php echo e(asset('public/css/app.css')); ?>?v=5">
     <?php if (!$noindex): ?>
     <script type="application/ld+json"><?php echo json_ld(org_schema()); ?></script>
     <script type="application/ld+json"><?php echo json_ld(array(
