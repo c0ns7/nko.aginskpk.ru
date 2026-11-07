@@ -1,6 +1,14 @@
 <?php
 define('ROOT_PATH', __DIR__);
 
+ini_set('default_charset', 'UTF-8');
+if (function_exists('mb_internal_encoding')) {
+    mb_internal_encoding('UTF-8');
+}
+if (function_exists('mb_http_output')) {
+    mb_http_output('UTF-8');
+}
+
 error_reporting(E_ALL);
 ini_set('display_errors', '0');
 ini_set('log_errors', '1');

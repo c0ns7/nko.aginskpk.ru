@@ -67,6 +67,9 @@ function schema_install()
     }
 
     seed_if_needed($force);
+    if (db_driver() === 'mysql') {
+        repair_mojibake_once();
+    }
     if ($force) {
         @file_put_contents($flag, date('c'));
     }
@@ -131,10 +134,96 @@ function mysql_schema()
     $tables = array('settings', 'users', 'news', 'documents', 'members');
     foreach ($tables as $table) {
         try {
-            $pdo->exec('ALTER TABLE `' . $table . '` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
+            $status = $pdo->query("SHOW TABLE STATUS LIKE '" . $table . "'")->fetch();
+            $collation = $status && isset($status['Collation']) ? $status['Collation'] : '';
+            if (stripos($collation, 'utf8mb4') === false) {
+                $pdo->exec('ALTER TABLE `' . $table . '` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
+            }
         } catch (Exception $e) {
         }
     }
+}
+
+function text_is_mojibake($value)
+{
+    if (!is_string($value) || $value === '') {
+        return false;
+    }
+    return (strpos($value, 'Р°') !== false || strpos($value, 'Рё') !== false || strpos($value, 'С‚') !== false || strpos($value, 'Рѕ') !== false);
+}
+
+function unmojibake_text($value)
+{
+    if (!is_string($value) || $value === '' || !text_is_mojibake($value)) {
+        return $value;
+    }
+    $bytes = function_exists('iconv') ? @iconv('UTF-8', 'CP1251//IGNORE', $value) : false;
+    if ($bytes === false || $bytes === '') {
+        return $value;
+    }
+    if (function_exists('mb_check_encoding') && !mb_check_encoding($bytes, 'UTF-8')) {
+        return $value;
+    }
+    if (!preg_match('/[А-Яа-яЁё]/u', $bytes)) {
+        return $value;
+    }
+    return $bytes;
+}
+
+function repair_mojibake_once()
+{
+    $done = db()->prepare('SELECT v FROM settings WHERE k = ?');
+    $done->execute(array('mojibake_fixed'));
+    $row = $done->fetch();
+    if ($row && $row['v'] === '1') {
+        return;
+    }
+
+    $check = db()->query("SELECT v FROM settings WHERE k = 'org_short'")->fetch();
+    $sample = $check ? $check['v'] : '';
+    if ($sample === '' || !text_is_mojibake($sample)) {
+        setting_set('mojibake_fixed', '1');
+        return;
+    }
+
+    $maps = array(
+        'settings' => array('v'),
+        'news' => array('title', 'body', 'grant_name', 'location', 'participation'),
+        'documents' => array('title', 'description', 'original_name'),
+        'members' => array('full_name', 'role_title', 'bio', 'grant_involvement'),
+    );
+
+    foreach ($maps as $table => $columns) {
+        $rows = db()->query('SELECT * FROM `' . $table . '`')->fetchAll();
+        foreach ($rows as $item) {
+            $changed = false;
+            $sets = array();
+            $params = array();
+            foreach ($columns as $col) {
+                if (!isset($item[$col])) {
+                    continue;
+                }
+                $fixed = unmojibake_text($item[$col]);
+                if ($fixed !== $item[$col]) {
+                    $sets[] = '`' . $col . '` = ?';
+                    $params[] = $fixed;
+                    $changed = true;
+                }
+            }
+            if ($changed) {
+                $params[] = $item['id'];
+                $sql = 'UPDATE `' . $table . '` SET ' . implode(', ', $sets) . ' WHERE id = ?';
+                if ($table === 'settings') {
+                    $sql = 'UPDATE settings SET ' . implode(', ', $sets) . ' WHERE k = ?';
+                    $params[count($params) - 1] = $item['k'];
+                }
+                $upd = db()->prepare($sql);
+                $upd->execute($params);
+            }
+        }
+    }
+
+    setting_set('mojibake_fixed', '1');
 }
 
 function sqlite_schema()

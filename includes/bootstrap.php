@@ -3,6 +3,11 @@ if (!defined('ROOT_PATH')) {
     define('ROOT_PATH', dirname(__DIR__));
 }
 
+ini_set('default_charset', 'UTF-8');
+if (function_exists('mb_internal_encoding')) {
+    mb_internal_encoding('UTF-8');
+}
+
 require_once ROOT_PATH . '/config.php';
 require_once ROOT_PATH . '/includes/helpers.php';
 require_once ROOT_PATH . '/includes/db.php';
