@@ -57,11 +57,13 @@ function render_header($title, $options = array())
 <?php
 }
 
-function render_footer()
+function render_footer($options = array())
 {
     $flash = flash_get();
+    $hideFooter = !empty($options['hide']);
     ?>
 </main>
+<?php if (!$hideFooter): ?>
 <footer class="site-footer">
     <div class="wrap footer-grid">
         <div>
@@ -76,10 +78,10 @@ function render_footer()
                 <?php if (setting('org_phone')): ?><a href="tel:<?php echo e(preg_replace('/[^\d+]/', '', setting('org_phone'))); ?>"><?php echo e(setting('org_phone')); ?></a><br><?php endif; ?>
                 <?php if (setting('org_email')): ?><a href="mailto:<?php echo e(setting('org_email')); ?>"><?php echo e(setting('org_email')); ?></a><?php endif; ?>
             </p>
-            <p class="footer-note">Сайт работает по HTTP и HTTPS. <a href="<?php echo e(url('admin/login')); ?>">Вход для редактора</a></p>
         </div>
     </div>
 </footer>
+<?php endif; ?>
 <?php if ($flash): ?>
 <div class="toast toast-<?php echo e($flash['type']); ?>" role="status"><?php echo e($flash['message']); ?></div>
 <?php endif; ?>
@@ -114,5 +116,5 @@ function render_admin_header($title)
 function render_admin_footer()
 {
     echo '</div></div>';
-    render_footer();
+    render_footer(array('hide' => true));
 }

@@ -149,7 +149,12 @@ function text_is_mojibake($value)
     if (!is_string($value) || $value === '') {
         return false;
     }
-    return (strpos($value, 'Р°') !== false || strpos($value, 'Рё') !== false || strpos($value, 'С‚') !== false || strpos($value, 'Рѕ') !== false);
+    return (bool) preg_match('/Р[°ёа-яА-Я]|[Сс][‚њўј]/u', $value)
+        || strpos($value, 'Р°') !== false
+        || strpos($value, 'Рё') !== false
+        || strpos($value, 'Рѕ') !== false
+        || strpos($value, 'С‚') !== false
+        || strpos($value, 'РЎ') !== false;
 }
 
 function unmojibake_text($value)
@@ -157,17 +162,31 @@ function unmojibake_text($value)
     if (!is_string($value) || $value === '' || !text_is_mojibake($value)) {
         return $value;
     }
-    $bytes = function_exists('iconv') ? @iconv('UTF-8', 'CP1251//IGNORE', $value) : false;
-    if ($bytes === false || $bytes === '') {
-        return $value;
+    $candidates = array();
+    if (function_exists('iconv')) {
+        $candidates[] = @iconv('UTF-8', 'CP1251//IGNORE', $value);
+        $candidates[] = @iconv('UTF-8', 'Windows-1251//IGNORE', $value);
     }
-    if (function_exists('mb_check_encoding') && !mb_check_encoding($bytes, 'UTF-8')) {
-        return $value;
+    if (function_exists('mb_convert_encoding')) {
+        $candidates[] = @mb_convert_encoding($value, 'CP1251', 'UTF-8');
+        $candidates[] = @mb_convert_encoding($value, 'Windows-1251', 'UTF-8');
     }
-    if (!preg_match('/[А-Яа-яЁё]/u', $bytes)) {
-        return $value;
+    $best = $value;
+    $bestScore = 0;
+    foreach ($candidates as $bytes) {
+        if (!is_string($bytes) || $bytes === '') {
+            continue;
+        }
+        if (!preg_match_all('/[А-Яа-яЁё]/u', $bytes, $m)) {
+            continue;
+        }
+        $score = count($m[0]);
+        if ($score > $bestScore && !text_is_mojibake($bytes)) {
+            $best = $bytes;
+            $bestScore = $score;
+        }
     }
-    return $bytes;
+    return $best;
 }
 
 function repair_mojibake_once()
@@ -175,14 +194,7 @@ function repair_mojibake_once()
     $done = db()->prepare('SELECT v FROM settings WHERE k = ?');
     $done->execute(array('mojibake_fixed'));
     $row = $done->fetch();
-    if ($row && $row['v'] === '1') {
-        return;
-    }
-
-    $check = db()->query("SELECT v FROM settings WHERE k = 'org_short'")->fetch();
-    $sample = $check ? $check['v'] : '';
-    if ($sample === '' || !text_is_mojibake($sample)) {
-        setting_set('mojibake_fixed', '1');
+    if ($row && $row['v'] === '3') {
         return;
     }
 
@@ -223,7 +235,45 @@ function repair_mojibake_once()
         }
     }
 
-    setting_set('mojibake_fixed', '1');
+    $seedBodies = array(
+        'Участие в конкурсе грантов губернатора Забайкальского края' => 'Организация готовит и сопровождает заявки социально значимых проектов, связанных с образованием, воспитанием и развитием студенческого сообщества колледжа. Итоги публикуются после официального объявления оператора конкурса.',
+        'Одобрен проект поддержки образовательных инициатив колледжа' => 'Проект направлен на развитие внеучебной деятельности, просветительских встреч и партнёрства с организациями округа. Средства гранта используются строго по смете и с отчётностью перед грантодателем.',
+        'Заявка на инфраструктурный грант не получила поддержку' => 'Конкурсная комиссия не включила заявку в список победителей. Организация сохраняет материалы проекта и планирует доработку к следующим приёмам заявок.',
+        'Организация выступила партнёром просветительских мероприятий округа' => 'Члены РОО участвовали в подготовке площадок, приглашении спикеров и информационной поддержке мероприятий для студентов и жителей посёлка.',
+    );
+    $updBody = db()->prepare('UPDATE news SET body = ? WHERE title = ?');
+    foreach ($seedBodies as $title => $body) {
+        $updBody->execute(array($body, $title));
+    }
+
+    $seedMembers = array(
+        'Шойдокова Наталья Цыренжаповна' => array(
+            'role_title' => 'Председатель совета',
+            'bio' => 'Руководит советом организации с 19 марта 2021 года.',
+            'grant_involvement' => 'Координация грантовых заявок и представление организации.',
+        ),
+        'Совет организации' => array(
+            'role_title' => 'Коллегиальный орган управления',
+            'bio' => 'Рассматривает вопросы участия в конкурсах, утверждает документы и отчёты.',
+            'grant_involvement' => 'Принятие решений об участии в грантах.',
+        ),
+        'Члены РОО «Развитие АПК»' => array(
+            'role_title' => 'Члены региональной общественной организации',
+            'bio' => 'В состав входят педагоги, сотрудники и партнёры Агинского педагогического колледжа им. Базара Ринчино. Полный список уточняется и публикуется по решению совета.',
+            'grant_involvement' => '',
+        ),
+        'Команда грантовых проектов' => array(
+            'role_title' => 'Участники реализации грантов',
+            'bio' => 'Преподаватели, студенты и приглашённые специалисты, которые включаются в конкретный проект по гранту.',
+            'grant_involvement' => 'Исполнение мероприятий, отчётность, работа с целевыми группами.',
+        ),
+    );
+    $updMember = db()->prepare('UPDATE members SET role_title = ?, bio = ?, grant_involvement = ? WHERE full_name = ?');
+    foreach ($seedMembers as $name => $fields) {
+        $updMember->execute(array($fields['role_title'], $fields['bio'], $fields['grant_involvement'], $name));
+    }
+
+    setting_set('mojibake_fixed', '3');
 }
 
 function sqlite_schema()
