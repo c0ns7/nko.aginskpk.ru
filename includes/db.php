@@ -131,6 +131,18 @@ function mysql_schema()
         published TINYINT(1) NOT NULL DEFAULT 1
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
+    $pdo->exec("CREATE TABLE IF NOT EXISTS news_files (
+        id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        news_id INT UNSIGNED NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        stored_name VARCHAR(255) NOT NULL,
+        original_name VARCHAR(255) NOT NULL,
+        mime VARCHAR(128) DEFAULT '',
+        size_bytes INT UNSIGNED NOT NULL DEFAULT 0,
+        created_at DATETIME NOT NULL,
+        INDEX (news_id)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
     $tables = array('settings', 'users', 'news', 'documents', 'members');
     foreach ($tables as $table) {
         try {
@@ -321,6 +333,16 @@ function sqlite_schema()
         grant_involvement TEXT,
         sort_order INTEGER NOT NULL DEFAULT 0,
         published INTEGER NOT NULL DEFAULT 1
+    )");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS news_files (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        news_id INTEGER NOT NULL,
+        title TEXT NOT NULL,
+        stored_name TEXT NOT NULL,
+        original_name TEXT NOT NULL,
+        mime TEXT DEFAULT '',
+        size_bytes INTEGER NOT NULL DEFAULT 0,
+        created_at TEXT NOT NULL
     )");
 }
 

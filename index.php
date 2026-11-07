@@ -48,7 +48,7 @@ if ($head === 'admin') {
     );
     if (!isset($adminPages[$section])) {
         http_response_code(404);
-        render_header('Страница не найдена');
+        render_header('Страница не найдена', array('noindex' => true));
         echo '<div class="wrap page-head"><h1>Страница не найдена</h1></div>';
         render_footer();
         exit;
@@ -63,11 +63,18 @@ $public = array(
     'members' => 'members.php',
     'news' => 'news.php',
     'download' => 'download.php',
+    'grant-file' => 'grant-file.php',
+    'robots.txt' => 'robots.php',
+    'sitemap.xml' => 'sitemap.php',
+    'rss.xml' => 'rss.php',
 );
 
 if (!isset($public[$head])) {
     http_response_code(404);
-    render_header('Страница не найдена');
+    render_header('Страница не найдена', array(
+        'noindex' => true,
+        'description' => 'Запрашиваемая страница не существует.',
+    ));
     echo '<div class="wrap page-head"><h1>Страница не найдена</h1><p class="lede"><a href="' . e(url('')) . '">На главную</a></p></div>';
     render_footer();
     exit;

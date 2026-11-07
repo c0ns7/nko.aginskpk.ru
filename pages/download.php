@@ -16,17 +16,4 @@ if (!is_file($path)) {
     return;
 }
 
-$mime = $doc['mime'] ? $doc['mime'] : 'application/octet-stream';
-$original = str_replace(array("\r", "\n", '"'), '', $doc['original_name']);
-$ascii = preg_replace('/[^\x20-\x7E]/', '_', $original);
-if ($ascii === '' || preg_match('/^_+$/', $ascii)) {
-    $ext = file_ext($doc['original_name']);
-    $ascii = 'document' . ($ext ? '.' . $ext : '');
-}
-
-header('Content-Type: ' . $mime);
-header('Content-Length: ' . filesize($path));
-header('Content-Disposition: attachment; filename="' . $ascii . '"; filename*=UTF-8\'\'' . rawurlencode($original));
-header('X-Content-Type-Options: nosniff');
-readfile($path);
-exit;
+send_stored_file($doc);
