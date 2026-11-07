@@ -139,6 +139,45 @@ function format_date_ru($date)
     return (int) date('j', $ts) . ' ' . $months[(int) date('n', $ts)] . ' ' . date('Y', $ts);
 }
 
+function format_date_parts($date)
+{
+    $empty = array('day' => '', 'month' => '', 'year' => '');
+    if (!$date || $date === '0000-00-00') {
+        return $empty;
+    }
+    $ts = strtotime($date);
+    if (!$ts) {
+        return $empty;
+    }
+    $months = array(
+        1 => 'января', 2 => 'февраля', 3 => 'марта', 4 => 'апреля',
+        5 => 'мая', 6 => 'июня', 7 => 'июля', 8 => 'августа',
+        9 => 'сентября', 10 => 'октября', 11 => 'ноября', 12 => 'декабря',
+    );
+    return array(
+        'day' => (string) (int) date('j', $ts),
+        'month' => $months[(int) date('n', $ts)],
+        'year' => date('Y', $ts),
+    );
+}
+
+function initials($name)
+{
+    $parts = preg_split('/\s+/u', trim((string) $name));
+    $out = '';
+    foreach ($parts as $part) {
+        if ($part === '') {
+            continue;
+        }
+        $letter = function_exists('mb_substr') ? mb_substr($part, 0, 1, 'UTF-8') : substr($part, 0, 1);
+        $out .= function_exists('mb_strtoupper') ? mb_strtoupper($letter, 'UTF-8') : strtoupper($letter);
+        if ((function_exists('mb_strlen') ? mb_strlen($out, 'UTF-8') : strlen($out)) >= 2) {
+            break;
+        }
+    }
+    return $out !== '' ? $out : '•';
+}
+
 function format_bytes($bytes)
 {
     $bytes = (int) $bytes;

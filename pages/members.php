@@ -36,14 +36,17 @@ render_header('Состав РОО «Развитие АПК» — совет, �
                 continue;
             }
             ?>
-            <h2 class="page-head" style="padding-bottom:0.35rem"><?php echo e($label); ?></h2>
+            <h2 class="group-title"><?php echo e($label); ?></h2>
             <div class="member-list">
                 <?php foreach ($chunk as $person): ?>
                     <article class="member-card">
+                        <div class="member-mark" aria-hidden="true"><?php echo e(initials($person['full_name'])); ?></div>
+                        <div>
                         <h2><?php echo e($person['full_name']); ?></h2>
                         <?php if ($person['role_title']): ?><p><strong><?php echo e($person['role_title']); ?></strong></p><?php endif; ?>
                         <?php if ($person['bio']): ?><p><?php echo e($person['bio']); ?></p><?php endif; ?>
                         <?php if ($person['grant_involvement']): ?><p>В грантах: <?php echo e($person['grant_involvement']); ?></p><?php endif; ?>
+                        </div>
                     </article>
                 <?php endforeach; ?>
             </div>

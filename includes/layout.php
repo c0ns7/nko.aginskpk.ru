@@ -58,7 +58,7 @@ function render_header($title, $options = array())
     <meta name="author" content="<?php echo e($orgShort); ?>">
     <meta name="geo.region" content="RU-ZAB">
     <meta name="geo.placename" content="Агинское">
-    <meta name="theme-color" content="#16332c">
+    <meta name="theme-color" content="#102820">
     <?php if (setting('yandex_verification')): ?>
     <meta name="yandex-verification" content="<?php echo e(setting('yandex_verification')); ?>">
     <?php endif; ?>
@@ -70,7 +70,7 @@ function render_header($title, $options = array())
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,650&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?php echo e(asset('public/css/app.css')); ?>">
+    <link rel="stylesheet" href="<?php echo e(asset('public/css/app.css')); ?>?v=3">
     <?php if (!$noindex): ?>
     <script type="application/ld+json"><?php echo json_ld(org_schema()); ?></script>
     <script type="application/ld+json"><?php echo json_ld(array(

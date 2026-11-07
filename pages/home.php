@@ -64,7 +64,12 @@ render_header($homeTitle, array(
         <div class="news-list">
             <?php foreach ($items as $item): ?>
                 <a class="news-item" href="<?php echo e(url('news/' . (int) $item['id'])); ?>">
-                    <time class="news-date" datetime="<?php echo e($item['grant_date']); ?>"><?php echo e(format_date_ru($item['grant_date'])); ?></time>
+                    <?php $parts = format_date_parts($item['grant_date']); ?>
+                    <time class="news-date" datetime="<?php echo e($item['grant_date']); ?>">
+                        <span class="d"><?php echo e($parts['day']); ?></span>
+                        <span class="m"><?php echo e($parts['month']); ?></span>
+                        <span class="y"><?php echo e($parts['year']); ?></span>
+                    </time>
                     <div>
                         <div class="stamp stamp-<?php echo e($item['grant_status']); ?>"><?php echo e(grant_status_label($item['grant_status'])); ?></div>
                         <h2 class="news-title"><?php echo e($item['title']); ?></h2>
