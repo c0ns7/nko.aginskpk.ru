@@ -25,7 +25,10 @@ function db()
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false,
             PDO::ATTR_TIMEOUT => 5,
+            PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci',
         ));
+        $pdo->exec('SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci');
+        $pdo->exec('SET CHARACTER SET utf8mb4');
         $GLOBALS['_db_driver'] = 'mysql';
         return $pdo;
     } catch (PDOException $e) {
@@ -72,17 +75,22 @@ function schema_install()
 function mysql_schema()
 {
     $pdo = db();
+    try {
+        $pdo->exec('ALTER DATABASE `' . str_replace('`', '', DB_NAME) . '` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
+    } catch (Exception $e) {
+    }
+
     $pdo->exec("CREATE TABLE IF NOT EXISTS settings (
         k VARCHAR(64) NOT NULL PRIMARY KEY,
         v TEXT
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS users (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
         login VARCHAR(64) NOT NULL UNIQUE,
         password_hash VARCHAR(255) NOT NULL,
         created_at DATETIME NOT NULL
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS news (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -96,7 +104,7 @@ function mysql_schema()
         published TINYINT(1) NOT NULL DEFAULT 1,
         created_at DATETIME NOT NULL,
         updated_at DATETIME NOT NULL
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS documents (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -107,7 +115,7 @@ function mysql_schema()
         mime VARCHAR(128) DEFAULT '',
         size_bytes INT UNSIGNED NOT NULL DEFAULT 0,
         created_at DATETIME NOT NULL
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
     $pdo->exec("CREATE TABLE IF NOT EXISTS members (
         id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -118,7 +126,15 @@ function mysql_schema()
         grant_involvement TEXT,
         sort_order INT NOT NULL DEFAULT 0,
         published TINYINT(1) NOT NULL DEFAULT 1
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    $tables = array('settings', 'users', 'news', 'documents', 'members');
+    foreach ($tables as $table) {
+        try {
+            $pdo->exec('ALTER TABLE `' . $table . '` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci');
+        } catch (Exception $e) {
+        }
+    }
 }
 
 function sqlite_schema()
