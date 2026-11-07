@@ -29,9 +29,9 @@ render_header('Документы РОО «Развитие АПК»: устав
                     <div>
                         <h2><?php echo e($doc['title']); ?></h2>
                         <p class="doc-meta">
-                            <?php echo e($doc['original_name']); ?>
-                            · <?php echo e(format_bytes($doc['size_bytes'])); ?>
-                            <?php if ($doc['description']): ?><br><?php echo e($doc['description']); ?><?php endif; ?>
+                            <span class="ext"><?php echo e(strtoupper(file_ext($doc['original_name']))); ?></span>
+                            <span><?php echo e(format_bytes($doc['size_bytes'])); ?></span>
+                            <?php if ($doc['description']): ?><span><?php echo e($doc['description']); ?></span><?php endif; ?>
                         </p>
                     </div>
                     <a class="btn" href="<?php echo e(url('download/' . (int) $doc['id'])); ?>">Скачать</a>

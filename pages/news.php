@@ -48,7 +48,7 @@ render_header($item['title'] . ' — грант, ' . grant_status_label($item['g
 ));
 ?>
 <article class="wrap article" itemscope itemtype="https://schema.org/NewsArticle">
-    <div class="stamp stamp-<?php echo e($item['grant_status']); ?>"><?php echo e(grant_status_label($item['grant_status'])); ?></div>
+    <span class="pill pill-<?php echo e($item['grant_status']); ?>"><?php echo e(grant_status_label($item['grant_status'])); ?></span>
     <h1 itemprop="headline"><?php echo e($item['title']); ?></h1>
     <dl class="facts">
         <?php if ($item['grant_name']): ?><div><dt>Грант / конкурс</dt><dd itemprop="about"><?php echo e($item['grant_name']); ?></dd></div><?php endif; ?>
@@ -67,7 +67,7 @@ render_header($item['title'] . ' — грант, ' . grant_status_label($item['g
             <article class="doc-row">
                 <div>
                     <h2><?php echo e($file['title']); ?></h2>
-                    <p class="doc-meta"><?php echo e($file['original_name']); ?> · <?php echo e(format_bytes($file['size_bytes'])); ?></p>
+                    <p class="doc-meta"><span class="ext"><?php echo e(strtoupper(file_ext($file['original_name']))); ?></span><span><?php echo e(format_bytes($file['size_bytes'])); ?></span></p>
                 </div>
                 <a class="btn" href="<?php echo e(url('grant-file/' . (int) $file['id'])); ?>">Скачать</a>
             </article>

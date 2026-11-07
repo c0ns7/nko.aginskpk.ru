@@ -40,18 +40,27 @@ render_header($homeTitle, array(
     ),
 ));
 ?>
-<section class="hero">
-    <div class="wrap">
-        <h1>Новости и гранты <?php echo e(setting('org_short')); ?></h1>
-        <p><?php echo e(setting('org_about')); ?></p>
-        <div class="meta-row">
-            <span><?php echo e(setting('org_head')); ?></span>
-            <span>ИНН <?php echo e(setting('org_inn')); ?></span>
-            <span>ОГРН <?php echo e(setting('org_ogrn')); ?></span>
+<section class="intro">
+    <div class="wrap intro-grid">
+        <div>
+            <h1>Гранты и жизнь <?php echo e(setting('org_short')); ?></h1>
+            <p><?php echo e(setting('org_about')); ?></p>
+            <div class="intro-actions">
+                <a class="btn" href="#grants">Смотреть гранты</a>
+                <a class="btn btn-ghost" href="<?php echo e(url('documents')); ?>">Документы</a>
+            </div>
         </div>
+        <aside class="passport">
+            <p class="passport-role"><?php echo e(setting('org_head')); ?></p>
+            <dl>
+                <div><dt>ИНН</dt><dd><?php echo e(setting('org_inn')); ?></dd></div>
+                <div><dt>ОГРН</dt><dd><?php echo e(setting('org_ogrn')); ?></dd></div>
+                <div><dt>Адрес</dt><dd><?php echo e(setting('org_address')); ?></dd></div>
+            </dl>
+        </aside>
     </div>
 </section>
-<div class="wrap">
+<div class="wrap" id="grants">
     <nav class="filters" aria-label="Фильтр по статусу гранта">
         <a class="chip<?php echo $status === '' ? ' is-on' : ''; ?>" href="<?php echo e(url('')); ?>">Все</a>
         <?php foreach ($allowed as $key => $label): ?>
@@ -64,28 +73,12 @@ render_header($homeTitle, array(
         <div class="news-list">
             <?php foreach ($items as $item): ?>
                 <a class="news-item" href="<?php echo e(url('news/' . (int) $item['id'])); ?>">
-                    <?php $parts = format_date_parts($item['grant_date']); ?>
-                    <time class="news-date" datetime="<?php echo e($item['grant_date']); ?>">
-                        <span class="d"><?php echo e($parts['day']); ?></span>
-                        <span class="m"><?php echo e($parts['month']); ?></span>
-                        <span class="y"><?php echo e($parts['year']); ?></span>
-                    </time>
+                    <time class="news-date" datetime="<?php echo e($item['grant_date']); ?>"><?php echo e(format_date_ru($item['grant_date'])); ?></time>
                     <div>
-                        <div class="stamp stamp-<?php echo e($item['grant_status']); ?>"><?php echo e(grant_status_label($item['grant_status'])); ?></div>
+                        <span class="pill pill-<?php echo e($item['grant_status']); ?>"><?php echo e(grant_status_label($item['grant_status'])); ?></span>
                         <h2 class="news-title"><?php echo e($item['title']); ?></h2>
                         <?php if ($item['grant_name']): ?><p class="news-grant"><?php echo e($item['grant_name']); ?></p><?php endif; ?>
-                        <p class="news-excerpt">
-                            <?php
-                            $bits = array();
-                            if ($item['location']) {
-                                $bits[] = $item['location'];
-                            }
-                            if ($item['participation']) {
-                                $bits[] = $item['participation'];
-                            }
-                            echo e(implode(' — ', $bits));
-                            ?>
-                        </p>
+                        <?php if ($item['location']): ?><p class="news-excerpt"><?php echo e($item['location']); ?></p><?php endif; ?>
                     </div>
                 </a>
             <?php endforeach; ?>
