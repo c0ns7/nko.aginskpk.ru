@@ -250,7 +250,7 @@ function ensure_storage()
     }
     $ht = ROOT_PATH . '/uploads/.htaccess';
     if (!is_file($ht)) {
-        file_put_contents($ht, "Options -Indexes\n<FilesMatch \"\\.(php|phtml|php3|php4|php5|phar)$\">\nDeny from all\n</FilesMatch>\n");
+        file_put_contents($ht, "<FilesMatch \"\\.(php|phtml|php3|php4|php5|phar)$\">\nRequire all denied\n</FilesMatch>\n");
     }
 }
 

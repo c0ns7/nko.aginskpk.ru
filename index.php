@@ -1,7 +1,24 @@
 <?php
 define('ROOT_PATH', __DIR__);
-require_once ROOT_PATH . '/includes/bootstrap.php';
-require_once ROOT_PATH . '/includes/layout.php';
+
+error_reporting(E_ALL);
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
+$logDir = ROOT_PATH . '/storage';
+if (!is_dir($logDir)) {
+    @mkdir($logDir, 0755, true);
+}
+ini_set('error_log', $logDir . '/php-error.log');
+
+try {
+    require_once ROOT_PATH . '/includes/bootstrap.php';
+    require_once ROOT_PATH . '/includes/layout.php';
+} catch (Exception $e) {
+    http_response_code(500);
+    header('Content-Type: text/plain; charset=utf-8');
+    echo 'Ошибка сайта: ' . $e->getMessage();
+    exit;
+}
 
 $route = current_path();
 $parts = $route === '' ? array() : explode('/', $route);

@@ -17,12 +17,14 @@ function db()
         return $pdo;
     }
 
+    @ini_set('default_socket_timeout', '5');
     $mysqlDsn = 'mysql:host=' . DB_HOST . ';port=' . DB_PORT . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET;
     try {
         $pdo = new PDO($mysqlDsn, DB_USER, DB_PASS, array(
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false,
+            PDO::ATTR_TIMEOUT => 5,
         ));
         $GLOBALS['_db_driver'] = 'mysql';
         return $pdo;
