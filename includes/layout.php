@@ -16,7 +16,7 @@ function render_header($title, $options = array())
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title><?php echo e($pageTitle); ?></title>
     <meta name="description" content="<?php echo e($description); ?>">
-    <link rel="icon" href="<?php echo e(asset('public/favicon.svg')); ?>" type="image/svg+xml">
+    <link rel="icon" href="<?php echo e(asset('public/favicon.svg')); ?>?v=2" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,650&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -29,9 +29,9 @@ function render_header($title, $options = array())
         <a class="brand" href="<?php echo e(url('')); ?>">
             <span class="brand-mark" aria-hidden="true">
                 <svg viewBox="0 0 48 48" width="44" height="44" focusable="false">
-                    <circle cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                    <circle cx="24" cy="24" r="16.5" fill="none" stroke="currentColor" stroke-width="0.75"/>
-                    <path d="M24 12v24M16 20h16M17.5 28h13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                    <rect x="3" y="3" width="42" height="42" rx="4" fill="none" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M24 16c-3.2 1.6-7.2 2-10 2v15c2.8 0 6.8-.4 10-2 3.2 1.6 7.2 2 10 2V18c-2.8 0-6.8-.4-10-2z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                    <path d="M24 16v15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
                 </svg>
             </span>
             <span class="brand-text">
