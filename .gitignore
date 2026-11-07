@@ -1,0 +1,4 @@
+/storage/local.sqlite
+/storage/.installed
+/uploads/documents/*
+!/uploads/documents/.gitkeep
